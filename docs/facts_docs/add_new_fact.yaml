@@ -1,0 +1,43 @@
+tags:
+  - name: Facts
+summary: Add new fact
+security:
+  - Bearer: []
+consumes:
+  - application/x-www-form-urlencoded
+parameters:
+  - name: Meat
+    in: formData
+    type: object
+  - name: Action
+    in: formData
+    type: string
+  - name: DegreeOfReadiness
+    in: formData
+    type: object
+  - name: TurnedOver
+    in: formData
+    type: boolean
+  - name: CookedFor
+    in: formData
+    type: object
+  - name: Time
+    in: formData
+    type: integer
+responses:
+  200:
+    description: Successful operation
+    schema:
+      type: object
+      properties:
+        data:
+          type: array
+          example: []
+        status:
+          type: string
+          example: 'OK'
+        response:
+          type: string
+          example: 'Successfully added activity'
+  400:
+    description: Some error occurred. Please try again.

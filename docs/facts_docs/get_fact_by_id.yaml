@@ -1,0 +1,29 @@
+tags:
+  - name: Facts
+summary: Get Fact by ObjectId
+security:
+  - Bearer: []
+parameters:
+  - in: path
+    name: _id
+    schema:
+      type: string
+    required: true
+responses:
+  200:
+    description: Successful operation
+    schema:
+      type: object
+      properties:
+        data:
+          type: array
+          example: []
+        status:
+          type: string
+          example: 'OK'
+        response:
+          type: string
+          example: ''
+          
+  400:
+    description: Fact not found
