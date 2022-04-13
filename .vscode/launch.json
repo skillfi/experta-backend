@@ -5,11 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Server",
+            "name": "Python: FastAPI",
             "type": "python",
             "request": "launch",
-            "program": "app.py",
-            "console": "integratedTerminal"
+            "module": "uvicorn",
+            "args": [
+                "app:app"
+            ],
+            "jinja": true,
+            "justMyCode": true
         }
     ]
 }

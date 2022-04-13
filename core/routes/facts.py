@@ -9,6 +9,7 @@ from flasgger import swag_from
 from flask import Blueprint, request
 
 api_facts = Blueprint('api_facts', __name__)
+api_rules = Blueprint('api_rules', __name__)
 path = os.getcwd()
 engine = System()
 engine.reset()
@@ -35,6 +36,7 @@ def add_fact():
         if data.get('TurnedOver') == 'true':
             Turned = True
         result = engine.init_fact(data, Turned)
+        engine.run()
     except Exception as e:
         error = str(e)
         logger.error(error)
@@ -74,3 +76,15 @@ def get_delete_update_by_id(_id: str):
         return wrap_response(resp, True)
     
     return wrap_response([result])
+
+@api_rules.route('/api/rules', methods=['GET'])
+@swag_from(f'{path}/docs/rules_docs/get_all_rules.yaml')
+def get_facts_list():
+    try:
+        db = Mongo()
+        facts = db.get_list('Rules')
+    except ExpertaBackendError as ex:
+        logger.error(ex.message)
+        return wrap_response({'errors': ex.message}, True)
+    
+    return wrap_response(facts)

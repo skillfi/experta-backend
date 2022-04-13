@@ -8,22 +8,31 @@ consumes:
 parameters:
   - name: Meat
     in: formData
-    type: object
+    type: string
+    enum: [Курятина, Свинина, Риба]
   - name: Action
     in: formData
     type: string
+    enum: [Перевернути, Забрати, Почекати]
   - name: DegreeOfReadiness
     in: formData
-    type: object
+    type: string
+    enum: [Прожарилось, Сире, Готова]
+  - name: Pardone
+    in: formData
+    type: string
+    enum: [Одна сторона, Друга сторона, Обидві сторони]
   - name: TurnedOver
     in: formData
     type: boolean
   - name: CookedFor
     in: formData
-    type: object
+    type: str
+    enum: [Василь, Степан, Петро]
   - name: Time
     in: formData
     type: integer
+    enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 responses:
   200:
     description: Successful operation
@@ -38,6 +47,6 @@ responses:
           example: 'OK'
         response:
           type: string
-          example: 'Successfully added activity'
+          example: 'Successfully added fact'
   400:
     description: Some error occurred. Please try again.

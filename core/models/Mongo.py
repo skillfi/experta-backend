@@ -35,6 +35,10 @@ class Mongo:
         return raw
     
     def add_new(self, post_data: dict ,collection):
+        """
+        Add new fiil collection list:\n
+        `System` and    `Rules`
+        """
         try:
             data = dict()
             for k in post_data:
@@ -58,7 +62,7 @@ class Mongo:
         object_id = ObjectId(_id)
         query = {'_id': object_id}
         resp = self.__collections__[collection].delete_one(query)
-        exclude_fields = ('opTime', 'operationTime', '$clusterTime')
+        exclude_fields = ('opTime', 'operationTime', '$clusterTime', 'electionId')
         result = dict()
         res = resp.raw_result
         for fields in res:
