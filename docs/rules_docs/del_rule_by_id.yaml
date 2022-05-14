@@ -1,11 +1,11 @@
 tags:
-  - name: Facts
-summary: Delete Fact by id
+  - name: Rules
+summary: Delete Rule by id
 security:
   - Bearer: []
 parameters:
   - in: path
-    name: fact_id
+    name: rule_id
     schema:
       type: string
     required: true

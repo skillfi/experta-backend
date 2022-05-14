@@ -5,21 +5,10 @@ from flask import jsonify, make_response
 from core.config import app, db
 
 
+# wrap response in json to return in API
 def wrap_response(data, errors=None, auth='Authorized', access='Permitted'):
     body = data
-    if not errors:
-        response = ''
-        # check if body is dictionary and contains 'message' key
-        if isinstance(body, dict) and body.get('message'):
-            response = body.get('message')
-        if '_id' in body:
-            body['_id'] = str(body['_id'])
-        if 'electionId' in body:
-            body['electionId'] = str(body['electionId'])
-        return make_response(jsonify({'status': 'OK',
-                                      'data': body,
-                                      'response': response}), 200)
-    else:
+    if isinstance(body, dict) and body.get('errors') is not None:
         if auth == 'Unauthorized':
             return make_response(jsonify({'status': 'Failed',
                                           'reason': body['errors']['message']}), 401)
@@ -28,3 +17,12 @@ def wrap_response(data, errors=None, auth='Authorized', access='Permitted'):
                                           'reason': body['errors']['message']}), 403)
         return make_response(jsonify({'status': 'Failed',
                                       'reason': body['errors']['message']}), 400)
+    else:
+        response = ''
+        # check if body is dictionary and contains 'message' key
+        if isinstance(body, dict) and body.get('message'):
+            response = body.get('message')
+            body = []
+        return make_response(jsonify({'status': 'OK',
+                                      'data': body,
+                                      'response': response}), 200)

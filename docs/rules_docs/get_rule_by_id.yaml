@@ -1,11 +1,11 @@
 tags:
-  - name: Facts
-summary: Get Fact by id
+  - name: Rules
+summary: Get Rule by id
 security:
   - Bearer: []
 parameters:
   - in: path
-    name: fact_id
+    name: rule_id
     schema:
       type: string
     required: true
