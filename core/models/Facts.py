@@ -23,6 +23,14 @@ class Facts:
         self.update_time = datetime.now().strftime(config['DATETIME_FORMAT'])
         # self._id = ''
     
+    @property
+    def FireBool(self):
+        if self.Fire == 'true':
+            self.Fire = True
+            return self.__dict__
+        else:
+            self.Fire = False
+            return self.__dict__
 
     @staticmethod
     def id(value):
@@ -37,7 +45,7 @@ class Facts:
         """
         try:
             fact = Facts(
-                Meat=post_data.get('Meat').get('Type'),
+                Meat=post_data.get('Meat'),
                 Marinade=post_data.get('Marinade'),
                 Coal=post_data.get('Coal'),
                 Woods=post_data.get('Woods'),
@@ -49,7 +57,7 @@ class Facts:
             # fact.id(result.inserted_id)
             response_object = {
                 'message': 'Successfully added collection.',
-                '_id': result.inserted_id
+                '_id': str(result.inserted_id)
             }
             return response_object
         except ExpertaBackendError as ex:

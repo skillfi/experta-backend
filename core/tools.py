@@ -22,7 +22,6 @@ def wrap_response(data, errors=None, auth='Authorized', access='Permitted'):
         # check if body is dictionary and contains 'message' key
         if isinstance(body, dict) and body.get('message'):
             response = body.get('message')
-            response = body.get('_id')
             body = []
         return make_response(jsonify({'status': 'OK',
                                       'data': body,
