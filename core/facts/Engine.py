@@ -12,7 +12,9 @@ from .Facts import Kebab as Fact
 
 class System(KnowledgeEngine):
 
-    response_object = dict()
+    response_object = dict(
+        message=str()
+    )
 
     def init_fact(self, fact: dict):
         obj = Fact(Meat=fact.get('Meat'),

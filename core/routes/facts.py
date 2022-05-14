@@ -32,7 +32,7 @@ def add_fact():
         return wrap_response({'errors': {'message': error}})
 
 @api_facts.route('/api/fact/init/<fact_id>', methods=['GET'])
-@swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['GET'])
+@swag_from(f'{path}/docs/facts_docs/init_fact_by_id.yaml', methods=['GET'])
 def init_fact(fact_id):
     pass
 
