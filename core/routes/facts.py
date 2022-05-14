@@ -1,15 +1,13 @@
 import os
 
+import core.services.facts as service
 from core.config import logger
 from core.facts.Engine import System
-from core.models.Mongo import Mongo
 from core.tools import wrap_response
-from errors.exceptions import ExpertaBackendError
 from flasgger import swag_from
 from flask import Blueprint, request
 
 api_facts = Blueprint('api_facts', __name__)
-api_rules = Blueprint('api_rules', __name__)
 path = os.getcwd()
 engine = System()
 engine.reset()
@@ -18,73 +16,33 @@ engine.reset()
 @api_facts.route('/api/facts', methods=['GET'])
 @swag_from(f'{path}/docs/facts_docs/get_all_facts.yaml')
 def get_facts_list():
-    try:
-        db = Mongo()
-        facts = db.get_list('System')
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return wrap_response({'errors': ex.message}, True)
-    
-    return wrap_response(facts)
+    return wrap_response(service.get_all_facts_endpoint())
 
-@api_facts.route('/api/fact/init', methods=['POST'])
+@api_facts.route('/api/facts', methods=['POST'])
 @swag_from(f'{path}/docs/facts_docs/add_new_fact.yaml')
 def add_fact():
     try:
         data = request.form
-        Turned = False
-        if data.get('TurnedOver') == 'true':
-            Turned = True
-        result = engine.init_fact(data, Turned)
-        # engine.run()
+        # validate form data and skip 'progress' field
+        return wrap_response(service.add_fact_endpoint(data))
     except Exception as e:
+        # converting error to string
         error = str(e)
         logger.error(error)
-        resp = {
-            'errors': {
-                'message': error
-            }
-        }
-        return wrap_response(resp, True)
-    return result
+        return wrap_response({'errors': {'message': error}})
 
-@api_facts.route('/api/fact/<_id>', methods=['GET', 'DELETE'])
+@api_facts.route('/api/fact/init/<fact_id>', methods=['GET'])
+@swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['GET'])
+def init_fact(fact_id):
+    pass
+
+@api_facts.route('/api/fact/<fact_id>', methods=['GET', 'DELETE'])
 @swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['GET'])
 @swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['DELETE'])
-def get_delete_update_by_id(_id: str):
-    result = None
-    db = Mongo()
-    try:
-        if request.method == 'GET':
-            result = db.get_by_id(_id, 'System')
-        elif request.method == 'DELETE':
-            result = db.delete_by_id(_id, 'System')
-            if not result:
-                error = {'message': f'Fact with _id = {_id} does not exist'}
-                logger.error(error)
-                return wrap_response({'errors': error}, True)
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return wrap_response({'errors': ex.message}, True)
-    except Exception as e:
-        error = str(e)
-        resp = {
-            'errors': {
-                'message': error
-            }
-        }
-        return wrap_response(resp, True)
+def get_delete_update_by_id(fact_id: str):
+    if request.method == 'GET':
+        return wrap_response(service.get_fact_endpoint(fact_id))
+    elif request.method == 'DELETE':
+        return wrap_response(service.delete_fact_endpoint(fact_id))
     
-    return wrap_response([result])
 
-@api_rules.route('/api/rules', methods=['GET'])
-@swag_from(f'{path}/docs/rules_docs/get_all_rules.yaml')
-def get_facts_list():
-    try:
-        db = Mongo()
-        facts = db.get_list('Rules')
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return wrap_response({'errors': ex.message}, True)
-    
-    return wrap_response(facts)
