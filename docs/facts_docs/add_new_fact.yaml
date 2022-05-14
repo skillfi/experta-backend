@@ -8,31 +8,29 @@ consumes:
 parameters:
   - name: Meat
     in: formData
-    type: string
-    enum: [Курятина, Свинина, Риба]
-  - name: Action
+    type: object
+  - name: Marinade
     in: formData
     type: string
-    enum: [Перевернути, Забрати, Почекати]
-  - name: DegreeOfReadiness
+    enum: [Кефір, Вино, Оцет]
+  - name: Coal
     in: formData
     type: string
-    enum: [Прожарилось, Сире, Готова]
-  - name: Pardone
+    enum: [Яблуня, Слива, Абрикоса]
+  - name: Woods
     in: formData
     type: string
-    enum: [Одна сторона, Друга сторона, Обидві сторони]
-  - name: TurnedOver
+    enum: [Клен, Дуб, Тополя, Осика, Верба, Ліщини, Каштана, Липи]
+  - name: Fire
     in: formData
     type: boolean
-  - name: CookedFor
+  - name: Weather
     in: formData
     type: str
     enum: [Василь, Степан, Петро]
   - name: Time
     in: formData
     type: integer
-    enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 responses:
   200:
     description: Successful operation

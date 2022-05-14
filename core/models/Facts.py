@@ -12,25 +12,17 @@ class Facts:
     """Facts Model for Storing facts related details"""
     __tablename__ = db.System
 
-    def __init__(self, Meat, Action, DegreeOfReadiness, Pardone, TurnedOver, CookedFor, Time) -> 'Facts':
+    def __init__(self, Meat, Marinade, Coal, Woods, Fire, Weather, Time) -> 'Facts':
         self.Meat = Meat
-        self.Action = Action
-        self.DegreeOfReadiness = DegreeOfReadiness
-        self.Pardone = Pardone
-        self.TurnedOver = TurnedOver
-        self.CookedFor = CookedFor
+        self.Marinade = Marinade
+        self.Coal = Coal
+        self.Woods = Woods
+        self.Fire = Fire
+        self.Weather = Weather
         self.Time = Time
         self.update_time = datetime.now().strftime(config['DATETIME_FORMAT'])
         # self._id = ''
     
-    @property
-    def Turned(self):
-        if self.TurnedOver == 'true':
-            self.TurnedOver = True
-            return self.__dict__
-        else:
-            self.TurnedOver = False
-            return self.__dict__
 
     @staticmethod
     def id(value):
@@ -45,12 +37,12 @@ class Facts:
         """
         try:
             fact = Facts(
-                Meat=post_data.get('Meat'),
-                Action=post_data.get('Action'),
-                DegreeOfReadiness=post_data.get('DegreeOfReadiness'),
-                Pardone=post_data.get('Pardone'),
-                TurnedOver=post_data.get('TurnedOver'),
-                CookedFor=post_data.get('CookedFor'),
+                Meat=post_data.get('Meat').get('Type'),
+                Marinade=post_data.get('Marinade'),
+                Coal=post_data.get('Coal'),
+                Woods=post_data.get('Woods'),
+                Fire=post_data.get('Fire'),
+                Weather=post_data.get('Weather'),
                 Time=post_data.get('Time')
             )
             result = fact.__tablename__.insert_one(fact.__dict__)

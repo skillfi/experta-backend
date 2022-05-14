@@ -18,18 +18,18 @@ class System(KnowledgeEngine):
 
     def init_fact(self, fact: dict):
         obj = Fact(Meat=fact.get('Meat'),
-            Action=fact.get('Action'),
-            DegreeOfReadiness=fact.get('DegreeOfReadiness'),
-            Pardone=fact.get('Pardone'),
-            TurnedOver=fact.get('TurnedOver'),
-            CookedFor=fact.get('CookedFor'),
+            Marinade=fact.get('Marinade'),
+            Coal=fact.get('Coal'),
+            Woods=fact.get('Woods'),
+            Fire=fact.get('Fire'),
+            Weather=fact.get('Weather'),
             Time=fact.get('Time')
         )
         facts = self.declare(obj)
         return facts.as_dict()
 
     
-    @Rule(AS.fact <<Fact(Meat='Курятина', Action='Перевернути'))
+    @Rule(AS.fact <<Fact(Meat='Курятина'))
     def _AS(self, fact: dict):
         pass
         # try:
