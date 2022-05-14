@@ -7,13 +7,20 @@ from errors.exceptions import ExpertaBackendError, UnknownCoollectionIdError
 
 
 class Mongo:
-    """ Kebab Model for storing facts related details """
+    """ collections Model for storing facts related details """
     __collections__ = {
         'System': db.System,
         'Rules': db.Rules
     }
     fetch_time = datetime.now().strftime(config['DATETIME_FORMAT'])
 
+    Meat = 'Meat'
+    Action = 'Action'
+    DegreeOfReadiness = 'DegreeOfReadiness'
+    Pardone = 'Pardone'
+    TurnedOver = 'TurnedOver'
+    CookedFor = 'CookedFor'
+    Time = 'Time'
     def get_by_id(self, _id, collection):
         obj_id = ObjectId(_id)
         response_object = self.__collections__[collection].find_one(obj_id)
@@ -69,4 +76,8 @@ class Mongo:
             if fields not in exclude_fields:
                 result[fields] = res[fields]
         return result
+    
+    @staticmethod
+    def get_by_index(index, data):
+        pass
     

@@ -36,7 +36,7 @@ def add_fact():
         if data.get('TurnedOver') == 'true':
             Turned = True
         result = engine.init_fact(data, Turned)
-        engine.run()
+        # engine.run()
     except Exception as e:
         error = str(e)
         logger.error(error)
