@@ -1,6 +1,7 @@
 import os
 
 import core.services.facts as service
+import core.services.rules as service_rule
 from core.config import logger
 from core.facts.Engine import System
 from core.tools import wrap_response
@@ -9,8 +10,6 @@ from flask import Blueprint, request
 
 api_facts = Blueprint('api_facts', __name__)
 path = os.getcwd()
-engine = System()
-engine.reset()
 
 
 @api_facts.route('/api/facts', methods=['GET'])
@@ -23,22 +22,37 @@ def get_facts_list():
 def add_fact():
     try:
         data = request.form
+        object = dict(
+            Meat=data.get('Meat').split(','),
+            Marinade=[data.get('Marinade')],
+            Coal=data.get('Coal').split(','),
+            Woods=data.get('Woods').split(','),
+            Weather=data.get('Weather').split(','),
+            Fire=data.get('Fire'),
+            Time=data.get('Time', 0)
+        )
         # validate form data and skip 'progress' field
-        return wrap_response(service.add_fact_endpoint(data))
+        return wrap_response(service.add_fact_endpoint(object))
     except Exception as e:
         # converting error to string
         error = str(e)
         logger.error(error)
         return wrap_response({'errors': {'message': error}})
 
-@api_facts.route('/api/fact/init/<fact_id>', methods=['GET'])
+@api_facts.route('/api/fact/get-recommendation/<fact_id>', methods=['GET'])
 @swag_from(f'{path}/docs/facts_docs/init_fact_by_id.yaml', methods=['GET'])
 def init_fact(fact_id):
-    pass
+    data = service.init_fact_endpoint(fact_id)
+    return wrap_response(service_rule.get_rule_by_fact_endpoint(fact_id))
+
+@api_facts.route('/api/fact/get-recommendation/<first_fact_id>/and/<second_fact_id>', methods=['GET'])
+@swag_from(f'{path}/docs/facts_docs/init_facts_by_id.yaml', methods=['GET'])
+def init_facts(first_fact_id, second_fact_id):
+    return wrap_response(service.init_facts_endpoint(first_fact_id, second_fact_id))
 
 @api_facts.route('/api/fact/<fact_id>', methods=['GET', 'DELETE'])
 @swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['GET'])
-@swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['DELETE'])
+@swag_from(f'{path}/docs/facts_docs/del_fact_by_id.yaml', methods=['DELETE'])
 def get_delete_update_by_id(fact_id: str):
     if request.method == 'GET':
         return wrap_response(service.get_fact_endpoint(fact_id))

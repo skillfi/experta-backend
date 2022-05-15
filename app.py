@@ -13,9 +13,10 @@ debug = bool(config['DEBUG'])
 
 
 app.config['SWAGGER'] = {
-    'swagger':'2.0',
+    'swagger':'2.0.0',
     'title': 'Experta swagger API',
-    'description': 'Experta swagger API v 1.0',
+    'description': 'Experta swagger API v 2.0',
+    'version': '1.0.6',
     'ui_params_text': '''{
         "operationsSorter" : function (a, b) {
             var order = {'get': '0', 'put': '1', 'post': '2', 'delete': '3'};
@@ -25,13 +26,17 @@ app.config['SWAGGER'] = {
         'docExpansion': 'None',
     }''',
     'securityDefinitions': {
-        'Basic': {
-            'type': 'oauth2',
-            'flow': 'password',
-            'description': 'Authorization',
-            'tokenUrl': '/api/login'
+            'Bearer': {
+                'type': 'oauth2',
+                'flows': {
+                    'password': {
+                        'tokenUrl': '/api/login'
+                    }
+                },
+                'description': 'Authorization', 
+            }
         }
-    }
+    
 }
 
 @app.route('/')

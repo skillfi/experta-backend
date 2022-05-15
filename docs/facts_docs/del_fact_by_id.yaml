@@ -6,8 +6,8 @@ security:
 parameters:
   - in: path
     name: fact_id
-    schema:
-      type: string
+    type: string
+    # format: uuid
     required: true
 responses:
   200:
@@ -24,6 +24,14 @@ responses:
         response:
           type: string
           example: ''
-          
   400:
     description: Fact not found
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'Failed'
+        reason:
+          type: string
+          example: 'Fact with id = 1 wasn`t found'

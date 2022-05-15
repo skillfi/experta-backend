@@ -12,40 +12,33 @@ parameters:
 responses:
   200:
     description: Successful operation
-    schema:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              meat:
-                type: string
-              action:
-                type: string
-              degreeOfReadiness:
-                type: string
-              time:
-                type: integer
-              turnedOver:
-                type: boolean
-              cookedFor:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
                 type: object
                 properties:
-                  name:
+                  _id:
                     type: string
-              addedOn:
-                type: string
-                format: date-time
-        status:
-          type: string
-          example: 'OK'
-        response:
-          type: string
-          example: ''
+                    format: uuid
+                  fact_id:
+                    type: string
+                    format: uuid
+                  recommendation:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+            status:
+              type: string
+              example: 'OK'
+            response:
+              type: string
+              example: ''
           
   400:
     description: Fact not found

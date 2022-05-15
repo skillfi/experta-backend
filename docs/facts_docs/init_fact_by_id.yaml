@@ -1,13 +1,12 @@
 tags:
   - name: Facts
-summary: Init Fact by id
+summary: Get Recommendation Fact by id
 security:
   - Bearer: []
 parameters:
   - in: path
     name: fact_id
-    schema:
-      type: string
+    type: string
     required: true
 responses:
   200:
@@ -24,6 +23,5 @@ responses:
         response:
           type: string
           example: ''
-          
   400:
     description: Fact not found

@@ -1,39 +1,77 @@
+openapi: 3.0.0
 tags:
   - name: Facts
 summary: Add new fact
+description: Added `fact` to `MongoDB`.
 security:
   - Bearer: []
-consumes:
+content:
   - application/x-www-form-urlencoded
 parameters:
   - name: Meat
     in: formData
-    type: object
+    type: array
+    collectionFormat: multi
+    minItems: 1
+    maxItems: 3
+    items:
+      type: string
+      enum: [[Шия, Корейка], [Шия, Вирізка], [Корейка, Вирізка]]
+    allowEmptyValue: true
   - name: Marinade
     in: formData
-    type: string
-    enum: [Кефір, Вино, Оцет]
+    type: array
+    collectionFormat: multi
+    minItems: 1
+    maxItems: 3
+    items:
+      type: string
+      enum: [Кефір, Вино, Оцет]
+    allowEmptyValue: true
   - name: Coal
     in: formData
-    type: string
-    enum: [Яблуня, Слива, Абрикоса]
+    type: array
+    collectionFormat: multi
+    minItems: 1
+    maxItems: 3
+    items:
+      type: string  
+      enum: [Яблуня, Слива, Абрикоса]
+    allowEmptyValue: true
   - name: Woods
     in: formData
-    type: string
-    enum: [Клен, Дуб, Тополя, Осика, Верба, Ліщини, Каштана, Липи]
+    type: array
+    collectionFormat: multi
+    minItems: 1
+    maxItems: 3
+    items:
+      type: string
+      enum: [Клен, Дуб, Тополя, Осика, Верба, Ліщини, Каштана, Липи]
+    allowEmptyValue: true
   - name: Fire
     in: formData
     type: boolean
+    allowEmptyValue: true
   - name: Weather
     in: formData
-    type: str
-    enum: [Василь, Степан, Петро]
+    type: array
+    collectionFormat: multi
+    minItems: 1
+    maxItems: 3
+    items:
+      type: string
+      enum: [Дощ, Сильний вітер, Сонячно, Без вітру]
+    allowEmptyValue: true
   - name: Time
     in: formData
     type: integer
+    format: int64
+    minimum: 1
+    description: Від `1` до `25` хвилин
+    allowEmptyValue: true
 responses:
-  200:
-    description: Successful operation
+  '200':
+    description: Successful `operation`
     schema:
       type: object
       properties:
@@ -48,3 +86,12 @@ responses:
           example: 'Successfully added fact'
   400:
     description: Some error occurred. Please try again.
+    schema:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'Failed'
+        reason:
+          type: string
+          example: 'Some error occurred. Please try again.'

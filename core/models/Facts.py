@@ -1,8 +1,11 @@
+import ast
 from datetime import datetime
+import uuid
 
 from bson.objectid import ObjectId
 from core.config import config, db, logger
 from core.facts.Engine import System
+from core.tools import wrap_response
 from errors.exceptions import ExpertaBackendError, UnknownCoollectionIdError
 
 engine = System()
@@ -21,7 +24,7 @@ class Facts:
         self.Weather = Weather
         self.Time = Time
         self.update_time = datetime.now().strftime(config['DATETIME_FORMAT'])
-        # self._id = ''
+        # self._id = str(uuid.uuid4())
     
     @property
     def FireBool(self):
@@ -44,6 +47,10 @@ class Facts:
         :param dict post_data: Dictionary
         """
         try:
+            if isinstance(post_data.get('Time'), str) and post_data.get('Time') != '':
+                post_data['Time'] = int(post_data['Time'])
+            if isinstance(post_data.get('Time'), str) and post_data.get('Time') == '':
+                post_data['Time'] = 0
             fact = Facts(
                 Meat=post_data.get('Meat'),
                 Marinade=post_data.get('Marinade'),
@@ -53,7 +60,7 @@ class Facts:
                 Weather=post_data.get('Weather'),
                 Time=post_data.get('Time')
             )
-            result = fact.__tablename__.insert_one(fact.__dict__)
+            result = fact.__tablename__.insert_one(fact.FireBool)
             # fact.id(result.inserted_id)
             response_object = {
                 'message': 'Successfully added collection.',
@@ -101,9 +108,26 @@ class Facts:
                 document['_id'] = str(document['_id'])
             raw.append(document)
         return raw
+
+    @staticmethod
+    def init_fact_by_id(fact_id) -> 'dict':
+        fact_to_rules = Facts.__tablename__.find_one(Facts.id(fact_id))
+        engine.init_fact(fact_to_rules)
+        engine.run()
     
     @staticmethod
-    def delete_by_id(fact_id):
+    def init_facts_by_id(first_fact_id, second_fact_id) -> 'dict':
+        facts = []
+        fact_to_rules = Facts.__tablename__.find_one(Facts.id(first_fact_id))
+        second_fact_to_rules = Facts.__tablename__.find_one(Facts.id(second_fact_id))
+        facts.append(fact_to_rules)
+        facts.append(second_fact_to_rules)
+        engine.init_fact(fact_to_rules, True, len(facts), facts)
+        return engine.run()
+
+    
+    @staticmethod
+    def delete_by_id(fact_id) -> 'dict':
         query = {'_id': Facts.id(fact_id)}
         resp = Facts.__tablename__.delete_one(query)
         exclude_fields = ('opTime', 'operationTime', '$clusterTime', 'electionId')

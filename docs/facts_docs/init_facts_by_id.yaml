@@ -1,11 +1,15 @@
 tags:
-  - name: Rules
-summary: Delete Rule by id
+  - name: Facts
+summary: Get Recommendation for two Facts by id
 security:
   - Bearer: []
 parameters:
   - in: path
-    name: rule_id
+    name: first_fact_id
+    type: string
+    required: true
+  - in: path
+    name: second_fact_id
     type: string
     required: true
 responses:
@@ -23,6 +27,5 @@ responses:
         response:
           type: string
           example: ''
-          
   400:
     description: Fact not found

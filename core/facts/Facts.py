@@ -4,10 +4,11 @@ class Kebab(Fact):
     """
     Allowed variants
     """
-    Meat = Field(list)
-    Marinade = Field(str)
-    Coal = Field(str)
-    Woods = Field(str)
-    Time = Field(int)
-    Weather = Field(str)
-    Fire = Field(str)
+    _id = Field(str)
+    Meat = Field(list, default=[])
+    Marinade = Field(list, default=[])
+    Coal = Field(list, default=[])
+    Woods = Field(list, default=[])
+    Time = Field(int, default=0)
+    Weather = Field(list, default=[])
+    Fire = Field(bool, default='')

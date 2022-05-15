@@ -43,3 +43,9 @@ def delete_fact_endpoint(fact_id):
 
 def add_fact_endpoint(data):
     return Facts.add_new(data)
+
+def init_fact_endpoint(fact_id):
+    return Facts.init_fact_by_id(fact_id)
+
+def init_facts_endpoint(first_fact_id, second_fact_id):
+    return Facts.init_facts_by_id(first_fact_id, second_fact_id)

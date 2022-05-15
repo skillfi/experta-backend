@@ -14,25 +14,38 @@ responses:
           items:
             type: object
             properties:
-              id:
+              _id:
+                type: string
+                format: uuid
+              Meat:
+                type: array
+                items: 
+                  type: string
+              Marinade:
+                type: array
+                items: 
+                  type: string
+              Coal:
+                type: array
+                items: 
+                  type: string
+              Time:
                 type: integer
-              meat:
-                type: string
-              action:
-                type: string
-              degreeOfReadiness:
-                type: string
-              time:
-                type: integer
-              turnedOver:
+                format: int64
+              Fire:
                 type: boolean
-              cookedFor:
-                type: object
-                properties:
-                  name:
-                    type: string
+              Weather:
+                type: array
+                items:
+                  type: string
               addedOn:
                 type: string
                 format: date-time
+        status:
+          type: string
+          example: 'OK'
+        response:
+          type: string
+          example: ''
   400:
     description: Fact not found

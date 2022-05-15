@@ -1,6 +1,7 @@
 import os
 
 from flask import jsonify, make_response
+from bson.objectid import ObjectId
 
 from core.config import app, db
 
