@@ -24,6 +24,8 @@ def wrap_response(data, errors=None, auth='Authorized', access='Permitted'):
         if isinstance(body, dict) and body.get('message'):
             response = body.get('message')
             body = []
-        return make_response(jsonify({'status': 'OK',
-                                      'data': body,
-                                      'response': response}), 200)
+        resp = {'status': 'OK', 'response': response}
+        if body:
+            resp['data'] = body
+        
+        return make_response(jsonify(resp), 200)

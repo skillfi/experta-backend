@@ -63,10 +63,10 @@ class Facts:
             result = fact.__tablename__.insert_one(fact.FireBool)
             # fact.id(result.inserted_id)
             response_object = {
-                'message': 'Successfully added collection.',
+                'response': 'Successfully added collection.',
                 '_id': str(result.inserted_id)
             }
-            return response_object
+            return [response_object]
         except ExpertaBackendError as ex:
             logger.error(ex.message)
             return {'errors': ex.message}
