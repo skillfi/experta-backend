@@ -9,14 +9,14 @@ class Rule:
 
     __tablename__ = db.Rules
     
-    def __init__(self, fact_id, recomendation) -> 'Rule':
+    def __init__(self, fact_id, recommendation) -> 'Rule':
         self.fact_id = fact_id
-        self.recomendation = recomendation
+        self.recommendation = recommendation
     
     @staticmethod
     def add_new(raw: list, engine) -> 'dict':
         """
-        Add new Recomendation
+        Add new Recommendation
 
         :param dict post_data: Dictionary
         """
@@ -25,7 +25,7 @@ class Rule:
             for post_data in raw:
                 rule = Rule(
                     fact_id=ObjectId(post_data.get('fact_id')),
-                    recomendation=post_data.get('recomendation')
+                    recommendation=post_data.get('recommendation')
                 )
                 rule.__tablename__.insert_one(rule.__dict__)
                 
