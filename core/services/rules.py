@@ -1,54 +1,20 @@
-import os
-
-from core.config import logger
 from core.models.Rule import Rule
-from errors.exceptions import ExpertaBackendError
 
 
 def get_all_rules_endpoint():
-    try:
-        return Rule.to_dict_list()
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return {'errors': ex.message}
-    except Exception as e:
-        # converting error to string
-        error = repr(e)
-        logger.error(error)
-        return {'errors': {'message': error}}
+    return Rule.to_dict_list(Rule.get_list())
+
 
 def get_rule_endpoint(rule_id):
-    try:
-        return Rule.get_by_id(rule_id)
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return {'errors': ex.message}
-    except Exception as e:
-        # converting error to string
-        error = repr(e)
-        logger.error(error)
-        return {'errors': {'message': error}}
+    return Rule.get_by_id(rule_id)
+
 
 def get_rule_by_fact_endpoint(fact_id):
-    try:
-        return Rule.get_by_fact_id(fact_id)
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return {'errors': ex.message}
-    except Exception as e:
-        # converting error to string
-        error = repr(e)
-        logger.error(error)
-        return {'errors': {'message': error}}
+    return Rule.to_dict_list(Rule.get_list_by_query({'fact_id':Rule.id(fact_id)}))
+
 
 def delete_rule_endpoint(rule_id):
-    try:
-        return Rule.delete_by_id(rule_id)
-    except ExpertaBackendError as ex:
-        logger.error(ex.message)
-        return {'errors': ex.message}
-    except Exception as e:
-        # converting error to string
-        error = repr(e)
-        logger.error(error)
-        return {'errors': {'message': error}}
+    return Rule.del_by_id(rule_id)
+
+def delete_rules_by_fact_endpoint(fact_id):
+    return Rule.del_by_fact_id(fact_id)

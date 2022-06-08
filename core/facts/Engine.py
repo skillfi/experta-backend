@@ -1,14 +1,10 @@
-import ast
-from random import random, randrange, choice, choices
+from random import choice
 
-from core.config import logger
 from core.models.Rule import Rule as Model
-from core.tools import wrap_response
-from errors.exceptions import ExpertaBackendError
 from experta import (AND, AS, EXISTS, FORALL, MATCH, NOT, OR, TEST, DefFacts,
                      KnowledgeEngine, Rule)
 from experta.fieldconstraint import L, P
-from experta.utils import unfreeze_frozendict, unfreeze_frozenlist, unfreeze
+from experta.utils import unfreeze, unfreeze_frozendict, unfreeze_frozenlist
 
 from .Facts import Kebab as Fact
 
@@ -48,66 +44,33 @@ class System(KnowledgeEngine):
     
     @Rule(AS.fact << Fact(Meat = MATCH.Meat))
     def _AS(self, Meat, fact):
-        try:
-            data = list()
-            for rule in fact.as_dict()['Meat']:
-                if rule == 'Шия':
-                    # self.response_object['fact_id'] = fact.get('_id')
-                    # self.response_object['recommendation'] =  f'{rule}: Вважається ідеальним вибором.'
-                    raw = dict(fact_id=fact.get('_id'), recommendation=f'{rule}: Вважається ідеальним вибором.')
-                    data.append(raw)
-                elif rule == 'Корейка':
-                    # self.response_object['fact_id'] = fact.get('_id')
-                    # self.response_object.update({'recommendation': f'{rule}: Слід вибирати шматок з солідним вкрапленням сала, яке потопиться при смаженні й не дасть шашлику пересушитися.'})
-                    raw = dict(fact_id=fact.get('_id'), recommendation=f'{rule}: Слід вибирати шматок з солідним вкрапленням сала, яке потопиться при смаженні й не дасть шашлику пересушитися.')
-                    data.append(raw)
-                elif rule == 'Вирізка':
-                    # self.response_object['fact_id'] = fact.get('_id')
-                    # self.response_object.update({'recommendation': f'{rule}: Найм’якша частина з представлених, але після приготування такої шашлик бажано відразу подавати до столу.'})
-                    raw = dict(fact_id=fact.get('_id'), recommendation=f'{rule}: Найм’якша частина з представлених, але після приготування такої шашлик бажано відразу подавати до столу.')
-                    data.append(raw)
-            return Model.add_new(data, self)
-        except ExpertaBackendError as ex:
-            logger.error(ex.message)
-            return {'errors': ex.message}
-        except Exception as e:
-            error = str(e)
-            logger.error(error)
-            resp = {
-                'errors': {
-                    'message': error
-                }
-            }
-            return resp
+        data = list()
+        for rule in fact.as_dict()['Meat']:
+            if rule == 'Шия':
+                raw = dict(fact_id=fact.get('_id'), recommendation=f'{rule}: Вважається ідеальним вибором.')
+                data.append(raw)
+            elif rule == 'Корейка':
+                raw = dict(fact_id=fact.get('_id'), recommendation=f'{rule}: Слід вибирати шматок з солідним вкрапленням сала, яке потопиться при смаженні й не дасть шашлику пересушитися.')
+                data.append(raw)
+            elif rule == 'Вирізка':
+                raw = dict(fact_id=fact.get('_id'), recommendation=f'{rule}: Найм’якша частина з представлених, але після приготування такої шашлик бажано відразу подавати до столу.')
+                data.append(raw)
+        return Model.add_new(data)
 
     @Rule(OR(AS.fact << Fact(Fire=~L(False), Weather=MATCH.Weather),
             AS.fact << Fact(Fire=~L(True), Weather=MATCH.Weather)))
     def _OR(self, fact, Weather):
-        try:
-            data = list()
-            for rule in fact.as_dict()['Weather']:
-                if rule == 'Дощ' and fact.get('Fire'):
-                    self.response_object['fact_id'] = fact.get('_id')
-                    self.response_object['recommendation'] = f'Під час {rule}у не рекомендуємо робити шашлик в таку погоду!'
-                    data.append(self.response_object)
-                elif rule == 'Сонячно' and not fact.get('Fire'):
-                    self.response_object['fact_id'] = fact.get('_id')
-                    self.response_object['recommendation'] = 'Погода не заважатиме пртготуванню шашлику!'
-                    data.append(self.response_object)
-            return Model.add_new(data, self)
-            
-        except ExpertaBackendError as ex:
-            logger.error(ex.message)
-            return wrap_response({'errors': ex.message})
-        except Exception as e:
-            error = str(e)
-            logger.error(error)
-            resp = {
-                'errors': {
-                    'message': error
-                }
-            }
-            return wrap_response(resp)
+        data = list()
+        for rule in fact.as_dict()['Weather']:
+            if rule == 'Дощ' and fact.get('Fire'):
+                self.response_object['fact_id'] = fact.get('_id')
+                self.response_object['recommendation'] = f'Під час {rule}у не рекомендуємо робити шашлик в таку погоду!'
+                data.append(self.response_object)
+            elif rule == 'Сонячно' and not fact.get('Fire'):
+                self.response_object['fact_id'] = fact.get('_id')
+                self.response_object['recommendation'] = 'Погода не заважатиме пртготуванню шашлику!'
+                data.append(self.response_object)
+        return Model.add_new(data)
 
     @Rule(AS.fact << Fact(Time=~L(P(lambda i: i>25))))
     def _L_P(self, fact):
@@ -115,7 +78,7 @@ class System(KnowledgeEngine):
         self.response_object['fact_id'] = fact.get('_id')
         self.response_object['recommendation'] = f'Шашлик ще не готовий. Потрібно не більше 20 хвилин на приготування'
         data.append(self.response_object)
-        return Model.add_new(data, self)
+        return Model.add_new(data)
         pass
 
     @Rule(
@@ -125,25 +88,12 @@ class System(KnowledgeEngine):
             )
         ))
     def _exist(self):
-        try:
-            fact = self.facts[1]
-            data = list()
-            self.response_object['fact_id'] = fact.get('_id')
-            self.response_object['recommendation'] = f'Категорично заборонено використовувати заправки з кислим середовищем: {unfreeze_frozenlist(fact.get("Marinade"))}'
-            data.append(self.response_object)
-            return Model.add_new(data, self)
-        except ExpertaBackendError as ex:
-            logger.error(ex.message)
-            return wrap_response({'errors': ex.message})
-        except Exception as e:
-            error = str(e)
-            logger.error(error)
-            resp = {
-                'errors': {
-                    'message': error
-                }
-            }
-            return wrap_response(resp)
+        fact = self.facts[1]
+        data = list()
+        self.response_object['fact_id'] = fact.get('_id')
+        self.response_object['recommendation'] = f'Категорично заборонено використовувати заправки з кислим середовищем: {unfreeze_frozenlist(fact.get("Marinade"))}'
+        data.append(self.response_object)
+        return Model.add_new(data)
     
     @Rule(
         FORALL(
@@ -152,25 +102,12 @@ class System(KnowledgeEngine):
         )
     )
     def _forall(self):
-        try:
-            fact = self.facts[1]
-            data = list()
-            self.response_object['fact_id'] = fact.get('_id')
-            self.response_object['recommendation'] = f'На вуггіллі крім Сливи рекомендуємо на ваш вибір: Яблуня, Абрикоса. На сухому дереві окрім Тополі рекомендуємо: Клен, Дуб, Осика, Верба, Ліщини, Каштана, Липи'
-            data.append(self.response_object)
-            return Model.add_new(data, self)
-        except ExpertaBackendError as ex:
-            logger.error(ex.message)
-            return wrap_response({'errors': ex.message})
-        except Exception as e:
-            error = str(e)
-            logger.error(error)
-            resp = {
-                'errors': {
-                    'message': error
-                }
-            }
-            return wrap_response(resp)
+        fact = self.facts[1]
+        data = list()
+        self.response_object['fact_id'] = fact.get('_id')
+        self.response_object['recommendation'] = f'На вуггіллі крім Сливи рекомендуємо на ваш вибір: Яблуня, Абрикоса. На сухому дереві окрім Тополі рекомендуємо: Клен, Дуб, Осика, Верба, Ліщини, Каштана, Липи'
+        data.append(self.response_object)
+        return Model.add_new(data)
     
     @Rule(
         AS.fact << Fact(
@@ -181,22 +118,9 @@ class System(KnowledgeEngine):
         )
     )
     def _test(self, Time, fact):
-        try:
-            data = list()
-            self.response_object['fact_id'] = fact.get('_id')
-            self.response_object['recommendation'] = f'Забагато часу: {Time}m. Шашлик перетвориться в вугілля'
-            data.append(self.response_object)
-            return Model.add_new(data, self)
-        except ExpertaBackendError as ex:
-            logger.error(ex.message)
-            return wrap_response({'errors': ex.message})
-        except Exception as e:
-            error = str(e)
-            logger.error(error)
-            resp = {
-                'errors': {
-                    'message': error
-                }
-            }
-            return wrap_response(resp)
+        data = list()
+        self.response_object['fact_id'] = fact.get('_id')
+        self.response_object['recommendation'] = f'Забагато часу: {Time}m. Шашлик перетвориться в вугілля'
+        data.append(self.response_object)
+        return Model.add_new(data)
 

@@ -1,17 +1,17 @@
-import ast
-import uuid
 from datetime import datetime
 
 from bson.objectid import ObjectId
 from core.config import config, db, logger
 from core.facts.Engine import System
+from core.models.base.DbModelBase import DbModelBase
 from core.tools import wrap_response
-from errors.exceptions import ExpertaBackendError, UnknownCoollectionIdError
+from errors.exceptions import AppBackendError, UnknownIdError
+from pymongo.errors import PyMongoError
 
 engine = System()
 engine.reset()
 
-class Facts:
+class Facts(DbModelBase):
     """Facts Model for Storing facts related details"""
     __tablename__ = db.System
 
@@ -36,10 +36,6 @@ class Facts:
             return self.__dict__
 
     @staticmethod
-    def id(value):
-        return ObjectId(value)
-
-    @staticmethod
     def add_new(post_data: dict) -> 'dict':
         """
         Add new Fact
@@ -56,58 +52,14 @@ class Facts:
                 Marinade=post_data.get('Marinade'),
                 Coal=post_data.get('Coal'),
                 Woods=post_data.get('Woods'),
-                Fire=post_data.get('Fire'),
+                Fire=post_data.get('Fire', True),
                 Weather=post_data.get('Weather'),
-                Time=post_data.get('Time')
+                Time=post_data.get('Time', 0)
             )
             result = fact.__tablename__.insert_one(fact.FireBool)
-            # fact.id(result.inserted_id)
-            response_object = {
-                'response': 'Successfully added collection.',
-                '_id': str(result.inserted_id)
-            }
-            return [response_object]
-        except ExpertaBackendError as ex:
-            logger.error(ex.message)
-            return {'errors': ex.message}
-        except Exception as e:
-            error = str(e)
-            logger.error(error)
-            return {'errors': {'message': error}}
-    
-    @staticmethod
-    def get_by_id(fact_id) -> 'dict':
-        """
-        Get Fact by id
-
-        :param int fact_id: Fact id
-        :raise UnknownCoollectionIdError: if Fact not found
-        :return: Return Fact by id
-        :rtype: UnknownCoollectionIdError or Fact
-        """
-        response_object = Facts.__tablename__.find_one(Facts.id(fact_id))
-        if not response_object:
-            raise UnknownCoollectionIdError(fact_id, Facts.__tablename__)
-        if isinstance(response_object['_id'], ObjectId):
-            response_object['_id'] = str(response_object['_id'])
-        return response_object
-    
-    @staticmethod
-    def to_dict_list():
-        """
-        Transformation Facts column to list
-
-        :param objs: Object to transformation into list
-        :return: Return transformed list with values
-        :rtype: list
-        """
-        raw = list()
-        all_documents = Facts.__tablename__.find()
-        for document in all_documents:
-            if isinstance(document['_id'], ObjectId):
-                document['_id'] = str(document['_id'])
-            raw.append(document)
-        return raw
+            return Facts.get_by_id(str(result.inserted_id))
+        except PyMongoError as ex:
+            raise AppBackendError(ex)
 
     @staticmethod
     def init_fact_by_id(fact_id) -> 'dict':
@@ -125,15 +77,3 @@ class Facts:
         engine.init_fact(fact_to_rules, True, len(facts), facts)
         return engine.run()
 
-    
-    @staticmethod
-    def delete_by_id(fact_id) -> 'dict':
-        query = {'_id': Facts.id(fact_id)}
-        resp = Facts.__tablename__.delete_one(query)
-        exclude_fields = ('opTime', 'operationTime', '$clusterTime', 'electionId')
-        result = dict()
-        res = resp.raw_result
-        for fields in res:
-            if fields not in exclude_fields:
-                result[fields] = res[fields]
-        return result

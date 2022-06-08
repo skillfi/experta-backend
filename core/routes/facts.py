@@ -17,46 +17,50 @@ path = os.getcwd()
 def get_facts_list():
     return wrap_response(service.get_all_facts_endpoint())
 
+
 @api_facts.route('/api/facts', methods=['POST'])
 @swag_from(f'{path}/docs/facts_docs/add_new_fact.yaml')
 def add_fact():
-    try:
-        data = request.form
-        object = dict(
-            Meat=data.get('Meat').split(','),
-            Marinade=[data.get('Marinade')],
-            Coal=data.get('Coal').split(','),
-            Woods=data.get('Woods').split(','),
-            Weather=data.get('Weather').split(','),
-            Fire=data.get('Fire'),
-            Time=data.get('Time', 0)
-        )
-        # validate form data and skip 'progress' field
-        return wrap_response(service.add_fact_endpoint(object))
-    except Exception as e:
-        # converting error to string
-        error = str(e)
-        logger.error(error)
-        return wrap_response({'errors': {'message': error}})
+    data = request.form
+    object = dict(
+        Meat=data.get('Meat').split(','),
+        Marinade=[data.get('Marinade')],
+        Coal=data.get('Coal').split(','),
+        Woods=data.get('Woods').split(','),
+        Weather=data.get('Weather').split(','),
+        Fire=data.get('Fire'),
+        Time=data.get('Time', 0)
+    )
+    # validate form data and skip 'progress' field
+    return wrap_response(service.add_fact_endpoint(object))
+
 
 @api_facts.route('/api/fact/get-recommendation/<fact_id>', methods=['GET'])
 @swag_from(f'{path}/docs/facts_docs/init_fact_by_id.yaml', methods=['GET'])
 def init_fact(fact_id):
-    data = service.init_fact_endpoint(fact_id)
+    service.init_fact_endpoint(fact_id)
+    if len(service_rule.get_rule_by_fact_endpoint(fact_id)) > 0:
+        return wrap_response(service_rule.get_rule_by_fact_endpoint(fact_id))
+    service.init_fact_endpoint(fact_id)
     return wrap_response(service_rule.get_rule_by_fact_endpoint(fact_id))
+
 
 @api_facts.route('/api/fact/get-recommendation/<first_fact_id>/and/<second_fact_id>', methods=['GET'])
 @swag_from(f'{path}/docs/facts_docs/init_facts_by_id.yaml', methods=['GET'])
 def init_facts(first_fact_id, second_fact_id):
     return wrap_response(service.init_facts_endpoint(first_fact_id, second_fact_id))
 
-@api_facts.route('/api/fact/<fact_id>', methods=['GET', 'DELETE'])
+
+@api_facts.route('/api/fact/<fact_id>', methods=['GET'])
 @swag_from(f'{path}/docs/facts_docs/get_fact_by_id.yaml', methods=['GET'])
+def get_fact(fact_id: str):
+    return wrap_response(service.get_fact_endpoint(fact_id))
+
+
+@api_facts.route('/api/fact/<fact_id>', methods=['DELETE'])
 @swag_from(f'{path}/docs/facts_docs/del_fact_by_id.yaml', methods=['DELETE'])
-def get_delete_update_by_id(fact_id: str):
-    if request.method == 'GET':
-        return wrap_response(service.get_fact_endpoint(fact_id))
-    elif request.method == 'DELETE':
-        return wrap_response(service.delete_fact_endpoint(fact_id))
+def del_fact(fact_id: str):
+    return wrap_response(service.delete_fact_endpoint(fact_id))
+        
     
 

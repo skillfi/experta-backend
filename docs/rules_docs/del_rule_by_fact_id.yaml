@@ -1,11 +1,11 @@
 tags:
   - name: Rules
-summary: Delete Rule by id
+summary: Delete Rule by fact id
 security:
-  - Bearer: []
+  - Basic: []
 parameters:
   - in: path
-    name: rule_id
+    name: fact_id
     type: string
     required: true
 responses:
@@ -16,7 +16,7 @@ responses:
       properties:
         data:
           type: integer
-          example: 1
+          example: 2
         status:
           type: string
           example: 'OK'
@@ -24,5 +24,5 @@ responses:
           type: string
           example: ''
           
-  400:
-    description: Fact not found
+  404:
+    description: Rule not found

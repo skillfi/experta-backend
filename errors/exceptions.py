@@ -1,10 +1,10 @@
-class ExpertaBackendError(Exception):
-    def __init__(self, message) -> 'ExpertaBackendError':
+class AppBackendError(Exception):
+    def __init__(self, message) -> 'AppBackendError':
         super().__init__(message)
 
-class UnknownCoollectionIdError(ExpertaBackendError):
+class UnknownIdError(AppBackendError):
     """
     """
-    def __init__(self, _id: int, collection: str):
+    def __init__(self, _id: int):
         self.message = {'message': f"Object with id = '{_id}' wasn't found"}
         super().__init__(self.message)
