@@ -57,7 +57,7 @@ class Facts(DbModelBase):
                 Time=post_data.get('Time', 0)
             )
             result = fact.__tablename__.insert_one(fact.FireBool)
-            return Facts.get_by_id(str(result.inserted_id))
+            return fact.FireBool
         except PyMongoError as ex:
             raise AppBackendError(ex)
 

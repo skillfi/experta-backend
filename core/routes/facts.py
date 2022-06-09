@@ -24,7 +24,7 @@ def add_fact():
     data = request.form
     object = dict(
         Meat=data.get('Meat').split(','),
-        Marinade=[data.get('Marinade')],
+        Marinade=data.get('Marinade').split(','),
         Coal=data.get('Coal').split(','),
         Woods=data.get('Woods').split(','),
         Weather=data.get('Weather').split(','),
