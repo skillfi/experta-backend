@@ -21,7 +21,7 @@ config = dict({**config, **ini_options})
 oauth = OAuth2Session(client=None)
 
 
-app.config['SECRET_KEY'] = 'fefe517cdbef408b9fb501c239fbbccbexpertaa'
+app.config['SECRET_KEY'] = ''
 
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = True
